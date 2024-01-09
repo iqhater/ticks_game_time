@@ -1,12 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"iqhater/tick_based_game_time/events"
+	"iqhater/tick_based_game_time/ui"
+	"log"
+	"os"
+	"strconv"
 	"time"
 )
 
-func generateActions() []events.Ticker {
+/* func generateActions() []events.Ticker {
 
 	result := []events.Ticker{}
 
@@ -35,53 +40,70 @@ func generateActions() []events.Ticker {
 		result = append(result, craft)
 	}
 	return result
-}
+} */
 
 func main() {
 
-	/* scanner := bufio.NewScanner(os.Stdin)
+	scanner := bufio.NewScanner(os.Stdin)
+
+	ui.ShowUI()
+
+	// ticks store
+	var totalTicks time.Duration
+
 	for scanner.Scan() {
 
-		fmt.Println("Select action type:")
-		fmt.Println("[1] - Dialogue event:")
-		fmt.Println("[2] - Quest event:")
-		fmt.Println("[3] - Move event:")
+		parsedNumber, err := strconv.Atoi(scanner.Text())
+		if err != nil {
+			log.Printf("%v\n", err)
+			continue
+		}
 
-		fmt.Println(scanner.Text())
-	}
+		if parsedNumber < 1 || parsedNumber > 6 {
+			log.Printf("%v\n", "Unknown action number!")
+			continue
+		}
 
-	if scanner.Err() != nil {
-		panic(scanner.Err())
-	} */
-
-	actions := generateActions()
-	now := time.Now()
-	var totalTime time.Duration
-
-	for _, action := range actions {
+		var action events.Ticker
+		action = events.NewEvent(parsedNumber)
+		ticker := time.NewTicker(action.Tick())
 
 		done := make(chan struct{})
 
-		ticker := time.NewTicker(action.Tick())
-
 		go func() {
+			// defer close(done)
 
 			for {
+
+				// guarantee to be executed
+				select {
+				case <-done:
+					return
+				default:
+				}
+
 				select {
 				case <-done:
 					return
 				case t := <-ticker.C:
-					totalTime = now.Sub(t)
-					fmt.Printf("Tick: %v Item ID: %d Event type: %s\n", t, action.ItemID(), action.EventTitle())
+					// totalTicks += time.Duration(t.Nanosecond())
+					totalTicks += action.ElapsedTimes()
+					fmt.Printf("EVENT TYPE: %s ITEM ID: %d TICK: %v \n", action.EventTitle(), action.ItemID(), t.Round(time.Millisecond))
 				}
-				// time.Sleep(150 * time.Millisecond)
 			}
 		}()
 
-		time.Sleep(time.Second)
+		time.Sleep(3 * time.Second)
 
 		ticker.Stop()
 		done <- struct{}{}
+		close(done)
+
+		fmt.Println("Total time:", totalTicks.Round(time.Millisecond))
+		ui.ShowUI()
 	}
-	fmt.Println("Total time:", totalTime)
+
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
 }

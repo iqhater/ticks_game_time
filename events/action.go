@@ -1,5 +1,9 @@
 package events
 
+import (
+	"github.com/fatih/color"
+)
+
 type Action uint8
 
 const (
@@ -7,6 +11,8 @@ const (
 	Quest
 	Move
 	Craft
+	Rest
+	Fight
 )
 
 func (a Action) String() string {
@@ -15,11 +21,15 @@ func (a Action) String() string {
 	case Dialogue:
 		return "dialogue"
 	case Quest:
-		return "quest"
+		return color.New(color.FgCyan).SprintFunc()("quest")
 	case Move:
-		return "move"
+		return color.New(color.FgBlue).SprintFunc()("move")
 	case Craft:
-		return "craft"
+		return color.New(color.FgGreen).SprintFunc()("craft")
+	case Rest:
+		return color.New(color.FgMagenta).SprintFunc()("rest")
+	case Fight:
+		return color.New(color.FgRed).SprintFunc()("fight")
 	default:
 		return "Unknown action type!"
 	}
