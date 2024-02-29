@@ -7,7 +7,6 @@ import (
 type QuestItem struct {
 	id    uint16
 	title string
-	// options []string
 	QuestEvent
 }
 

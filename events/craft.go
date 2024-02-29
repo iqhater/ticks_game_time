@@ -7,7 +7,6 @@ import (
 type CraftItem struct {
 	id    uint16
 	title string
-	// options []string
 	CraftEvent
 }
 

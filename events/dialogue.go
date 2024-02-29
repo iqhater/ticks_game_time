@@ -7,7 +7,6 @@ import (
 type DialogueItem struct {
 	id    uint16
 	title string
-	// options []string
 	DialogueEvent
 }
 

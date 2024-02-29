@@ -7,7 +7,6 @@ import (
 type FightItem struct {
 	id    uint16
 	title string
-	// options []string
 	FightEvent
 }
 

@@ -7,7 +7,6 @@ import (
 type RestItem struct {
 	id    uint16
 	title string
-	// options []string
 	RestEvent
 }
 
